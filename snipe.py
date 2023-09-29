@@ -83,7 +83,7 @@ class Snipe:
             "category_id": self.macos_category_id,
             "manufacturer_id": self.manufacturer_id,
             "model_number": model,
-            "fieldset_id": self.mac_os_fieldset_id,
+            "fieldset_id": self.macos_fieldset_id,
             "image":imageResponse
         }
 

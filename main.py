@@ -122,16 +122,15 @@ for deviceType in deviceTypes:
         devicePayload = snipe.buildPayloadFromMosyle(sn);
         
         # If asset doesnt exist create and assign it
-        if asset['total'] == 0:
+        if ('messages' in asset and asset['messages'] == 'Asset does not exist.') or ('rows' in asset and len(asset['rows']) == 0):
             asset = snipe.createAsset(model, devicePayload).json()
             if mosyle_user != None:
-                print('Assigning asset to SnipIT user based on Mosyle Assignment')
+                print('Assigning asset to SnipeIT user based on Mosyle Assignment')
                 snipe.assignAsset(mosyle_user, asset['payload']['id'])
                 continue
 
         # Update existing Devices              
-        print(asset)
-        if asset['total'] == 1:
+        if 'total' in asset and asset['total'] == 1:
             #f"{x:.2f}"
             print('Asset ', sn['serial_number'],' already exists in SnipeIt. Update it.')
             print(asset['rows'][0]['name'])
@@ -158,8 +157,12 @@ for deviceType in deviceTypes:
         print("Checking to see if Mosyle needs an updated asset tag")
         #if there is no asset tag on mosyle, add the snipeit asset tag
         if(sn['asset_tag'] == None or sn['asset_tag'] == "" or sn['asset_tag'] != asset['rows'][0]['asset_tag']):
-            print('update the mosyle asset tag of device ', sn['serial_number'], 'to ', asset['rows'][0]['asset_tag'])
-            mosyle.setAssetTag(sn['serial_number'], asset['rows'][0]['asset_tag'])
+            if 'payload' in asset:
+                asset_tag = asset['payload']['asset_tag']
+            else:
+                asset_tag = asset['rows'][0]['asset_tag']
+            print('update the mosyle asset tag of device ', sn['serial_number'], 'to ', asset_tag)
+            mosyle.setAssetTag(sn['serial_number'], asset_tag)
         else:
             print('Mosyle already has an assest tag of: ', sn['asset_tag'])
     
